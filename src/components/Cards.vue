@@ -15,6 +15,11 @@
         {{ props.HR }}
       </p></t-card
     >
+    <t-card title="检测时间" hoverShadow
+      ><p class="text-center text-4xl mb-6">
+        {{ props.date }}
+      </p></t-card
+    >
   </t-space>
 </template>
 
@@ -22,7 +27,7 @@
 import { computed, watch } from "vue";
 import { NotifyPlugin } from "tdesign-vue-next";
 
-const props = defineProps(["SBP", "DBP", "HR"]);
+const props = defineProps(["SBP", "DBP", "HR", "date"]);
 const S_status = computed(() => {
   if (props.SBP > 120 && props.SBP <= 140) return "text-yellow-400";
   else if (props.SBP > 140) return "text-red-500";
@@ -57,7 +62,7 @@ watch(
         content: "您的血压正常。",
       });
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: false }
 );
 </script>
 
