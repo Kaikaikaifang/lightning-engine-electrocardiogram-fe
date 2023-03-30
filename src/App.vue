@@ -92,7 +92,7 @@ const update = (d) => {
 
 let Axios = import.meta.env.PROD
   ? axios.create({
-      baseURL: "http://192.168.0.173:8000",
+      baseURL: "http://123.249.45.13:8000",
       timeout: 1000,
     })
   : axios;

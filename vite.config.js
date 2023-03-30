@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/login": {
-        target: "http://192.168.0.173:8000",
+        target: "http://123.249.45.13:8000",
         changeOrigin: true,
       },
     },
