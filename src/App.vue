@@ -93,7 +93,7 @@ let Axios = import.meta.env.PROD
 
 Axios.get("/api/data").then((response) => {
   config.value = response.data.data;
-  selected.value = config.value[0]
+  if (config.value) selected.value = config.value[0]
   socket.connect()
 });
 
@@ -122,7 +122,7 @@ const translateTime = (dd) => {
   d = new Date(d);
   let timestamp = d.getTime() / 1000;
 
-  timestamp = timestamp + 8 * 60 * 60;
+  timestamp = timestamp;
 
   // 时间戳转为时间
   let date_ = new Date(parseInt(timestamp) * 1000);
