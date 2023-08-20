@@ -86,7 +86,7 @@ const options = computed(() => config.value?.map(e => ({
 
 let Axios = import.meta.env.PROD
   ? axios.create({
-      baseURL: "http://123.249.45.13:5000/api",
+      baseURL: "http://123.249.45.13:8000/api",
       timeout: 60000,
     })
   : axios;

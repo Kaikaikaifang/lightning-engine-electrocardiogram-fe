@@ -6,7 +6,7 @@ export const state = reactive({
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = import.meta.env.PROD ? undefined : "http://localhost:5000";
+const URL = import.meta.env.PROD ? "http://123.249.45.13:8000" : "http://localhost:5000";
 
 export const socket = io(URL);
 
