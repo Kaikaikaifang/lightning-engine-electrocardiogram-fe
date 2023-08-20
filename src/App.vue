@@ -1,29 +1,28 @@
 <template>
   <t-layout class="h-screen">
     <t-header>
-      <t-head-menu theme="light" expand-type="popup">
+      <t-head-menu theme="light" expand-type="popup" class="px-3">
         <template #logo>
           <div class="flex flex-row align-middle items-center ml-3">
             <img
               width="33"
               class="logo"
-              src="/Electrocardiogram.svg"
+              src="@/assets/Electrocardiogram.png"
               alt="logo"
             />
             <p class="ml-2 text-2xl italic">心连"新"</p>
           </div>
         </template>
-        <t-submenu value="history" title="历史记录">
-          <t-menu-item
-            :value="k"
-            @click="() => update(k)"
-            v-for="(v, k) in config"
-            >{{ translateTime(k) }}</t-menu-item
-          >
-        </t-submenu>
+        <t-dropdown :options="options" :max-column-width="200" :max-height="200" @click="select" :class="{'notify-active': hasNewData}">
+          <t-button variant="text">
+            历史记录
+            <template #suffix><chevron-down-icon size="16" /></template>
+          </t-button>
+        </t-dropdown>
         <template #operations>
           <a href="javascript:;" class="mr-3" @click="changeMode">
-            <tips-icon size="large"></tips-icon>
+            <brightness-icon v-if="dark" size="large"></brightness-icon>
+            <Brightness1Icon v-else size="large"></Brightness1Icon>
           </a>
         </template>
       </t-head-menu>
@@ -34,10 +33,10 @@
         :class="{ 'bg-slate-100': !dark, 'bg-gray-800': dark }"
       >
         <t-card class="basis-1/4 m-2">
-          <Cards :SBP="SBP" :DBP="DBP" :HR="HR" :date="showTime" />
+          <Cards :SBP="selected.SBP" :DBP="selected.DBP" :HR="selected.HR" :date="date" />
         </t-card>
         <t-card class="basis-3/4 m-2">
-          <Electrocardiogram :PPG="PPG" :ECG="ECG" />
+          <Electrocardiogram :PPG="selected.PPG" :ECG="selected.ECG" />
         </t-card>
       </div>
     </t-content>
@@ -45,63 +44,69 @@
 </template>
 
 <script setup>
-import Cards from "./components/Cards.vue";
-import Electrocardiogram from "./components/Electrocardiogram.vue";
-import { ref, reactive, computed } from "vue";
+import Cards from "@/components/Cards.vue";
+import Electrocardiogram from "@/components/Electrocardiogram.vue";
+import { ref, computed, onUnmounted } from "vue";
 import axios from "axios";
-import { TipsIcon } from "tdesign-icons-vue-next";
+import { BrightnessIcon, Brightness1Icon, ChevronDownIcon } from "tdesign-icons-vue-next";
+import { socket } from "@/socket"
+
 
 const dark = ref(false);
+const hasNewData = ref(false)
 
 const changeMode = () => {
   dark.value = !dark.value;
   if (dark.value) document.documentElement.setAttribute("theme-mode", "dark");
   else document.documentElement.removeAttribute("theme-mode");
 };
-let config = reactive({
-  "20230325T084945Z": {
-    SBP: 150,
-    DBP: 70,
-    HR: 66,
-    PPG: [
-      [0, 44],
-      [5, 99],
-      [10, 199],
-    ],
-    ECG: [
-      [0, 44],
-      [5, 99],
-      [10, 49],
-    ],
-  },
-});
-const SBP = computed(() => config[date.value].SBP);
-const DBP = computed(() => config[date.value].DBP);
-const HR = computed(() => config[date.value].HR);
-const date = ref("20230325T084945Z");
-const PPG = computed(() => config[date.value].PPG);
-const ECG = computed(() => config[date.value].ECG);
 
-let showTime = computed(() => {
-  return translateTime(date.value);
-});
+let config = ref()
 
-const update = (d) => {
-  date.value = d;
-};
+let selected = ref([{
+    SBP: 0,
+    DBP: 0,
+    HR: 0,
+    PPG: [],
+    ECG: [],
+    datetime: ""
+}])
+function select(v) {
+  console.log('selected: ', v);
+  selected.value = v.value
+  hasNewData.value = false
+}
+
+const date = computed(() => selected.value.datetime ? translateTime(selected.value.datetime) : "")
+
+const options = computed(() => config.value?.map(e => ({
+  content: translateTime(e.datetime),
+  value: e
+})))
 
 let Axios = import.meta.env.PROD
   ? axios.create({
-      baseURL: "http://123.249.45.13:8000",
-      timeout: 1000,
+      baseURL: "http://123.249.45.13:5000/api",
+      timeout: 60000,
     })
   : axios;
 
-Axios.get("/login/data").then((response) => {
-  config = response.data;
-  update(Object.keys(config)[0]);
+Axios.get("/api/data").then((response) => {
+  config.value = response.data.data;
+  selected.value = config.value[0]
+  socket.connect()
 });
+
+socket.on('new_data', (data) => {
+  console.log('new_data', data);
+  config.value = data
+  hasNewData.value = true
+})
 console.log(import.meta.env.PROD);
+
+onUnmounted(() => {
+  socket.disconnect()
+})
 
 const translateTime = (dd) => {
   let d =
@@ -138,4 +143,18 @@ const translateTime = (dd) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.notify-active {
+  &::before {
+    content: '';
+    position: absolute;
+    // z-index: 999;
+    top: 4px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: red;
+  }
+}
+</style>
