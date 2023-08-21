@@ -86,7 +86,7 @@ const options = computed(() => config.value?.map(e => ({
 
 let Axios = import.meta.env.PROD
   ? axios.create({
-      baseURL: "https://hwcloud.xyz",
+      baseURL: "http://hwcloud.xyz",
       timeout: 60000,
     })
   : axios;
