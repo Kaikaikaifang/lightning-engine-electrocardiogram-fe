@@ -43,25 +43,27 @@ const H_status = computed(() => {
   else if (props.HR > 80 && props.HR <= 100) return "text-yellow-400";
   else return "text-red-500";
 });
+
 watch(
   props,
   () => {
+    NotifyPlugin.closeAll()
     if (props.SBP > 140 || props.DBP > 90)
-      NotifyPlugin.error({
+      notify = NotifyPlugin.error({
         title: "😫",
         content: "您为高血压！要注意改善生活方式，控制体重，戒烟限酒。",
         closeBtn: true,
         duration: 0
       });
     else if (props.SBP > 120 || props.DBP > 80)
-      NotifyPlugin.warning({
+      notify = NotifyPlugin.warning({
         title: "😣",
         content: "您的血压偏高，要注意改善生活方式，控制体重。",
         closeBtn: true,
         duration: 0
       });
     else
-      NotifyPlugin.success({
+      notify = NotifyPlugin.success({
         title: "😆",
         content: "您的血压正常。",
         closeBtn: true,
