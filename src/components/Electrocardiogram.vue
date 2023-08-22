@@ -51,6 +51,7 @@ let ecgOption = computed(() => ({
     },
   ],
 }));
+
 onMounted(() => {
   ppgChart = echarts.init(ppgDom.value);
   ecgChart = echarts.init(ecgDom.value);

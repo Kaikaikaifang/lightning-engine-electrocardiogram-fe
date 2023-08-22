@@ -50,7 +50,10 @@ import { ref, computed, onUnmounted } from "vue";
 import axios from "axios";
 import { BrightnessIcon, Brightness1Icon, ChevronDownIcon } from "tdesign-icons-vue-next";
 import { socket } from "@/socket"
+import { MessagePlugin } from 'tdesign-vue-next';
 
+
+MessagePlugin.info({content: "测量时间在 2 分钟左右，请您耐心等待。💙", duration: 0, closeBtn: true})
 
 const dark = ref(false);
 const hasNewData = ref(false)
