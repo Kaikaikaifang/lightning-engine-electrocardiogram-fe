@@ -49,21 +49,21 @@ watch(
   () => {
     NotifyPlugin.closeAll()
     if (props.SBP > 140 || props.DBP > 90)
-      notify = NotifyPlugin.error({
+      NotifyPlugin.error({
         title: "😫",
         content: "您为高血压！要注意改善生活方式，控制体重，戒烟限酒。",
         closeBtn: true,
         duration: 0
       });
     else if (props.SBP > 120 || props.DBP > 80)
-      notify = NotifyPlugin.warning({
+      NotifyPlugin.warning({
         title: "😣",
         content: "您的血压偏高，要注意改善生活方式，控制体重。",
         closeBtn: true,
         duration: 0
       });
     else
-      notify = NotifyPlugin.success({
+      NotifyPlugin.success({
         title: "😆",
         content: "您的血压正常。",
         closeBtn: true,
